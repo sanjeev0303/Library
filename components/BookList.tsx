@@ -1,4 +1,5 @@
 import React from 'react'
+import BookCard from './BookCard'
 
 interface BookListProps {
     title: string
@@ -14,9 +15,7 @@ const BookList = ({title, books, containerClassName }: BookListProps) => {
 
         <ul className='book-list'>
             {books.map((book) => (
-                <li>
-                    
-                </li>
+               <BookCard key={book.title} {...book} />
             ))}
         </ul>
     </section>
