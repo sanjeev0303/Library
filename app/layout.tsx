@@ -4,7 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 
 import localFont from "next/font/local";
 import { ReactNode } from "react";
-// import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
+import { SessionProvider } from "next-auth/react";
 // import { auth } from "@/auth";
 
 const ibmPlexSans = localFont({
@@ -30,11 +31,11 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
-//   const session = await auth();
+  const session = await auth();
 
   return (
     <html lang="en">
-      {/* <SessionProvider session={session}> */}
+      <SessionProvider session={session}>
         <body
           className={`${ibmPlexSans.className} ${bebasNeue.variable} antialiased`}
           suppressHydrationWarning
@@ -43,7 +44,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
 
           <Toaster />
         </body>
-      {/* </SessionProvider> */}
+      </SessionProvider>
     </html>
   );
 };
