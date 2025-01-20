@@ -5,19 +5,24 @@ import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { hash } from "bcryptjs";
 import { signIn } from "@/auth";
+import { headers } from "next/headers";
+import ratelimit from "../ratelimit";
+import { redirect } from "next/navigation";
 
-// interface AuthCredentials {
-//   fullName: string;
-//   email: string;
-//   universityId: number;
-//   universityCard: string;
-//   password: string;
-// }
+
 
 export const signInWithCredentials = async (
   params: Pick<AuthCredentials, "email" | "password">
 ) => {
   const { email, password } = params;
+
+  const ip = (await headers()).get('x-forwarded-for') || "127.0.0.1";
+
+    const { success } = await ratelimit.limit(ip)
+
+    if (!success) {
+        return redirect("/too-fast")
+    }
 
   try {
     const result = await signIn("credentials", {
@@ -45,6 +50,14 @@ export const signInWithCredentials = async (
     // Ensure all required fields are defined
     if (!fullName || !email || !universityId || !universityCard || !password) {
       return { success: false, error: "All fields are required." };
+    }
+
+    const ip = (await headers()).get('x-forwarded-for') || "127.0.0.1";
+
+    const { success } = await ratelimit.limit(ip)
+
+    if (!success) {
+        return redirect("/too-fast")
     }
 
     const existingUser = await db
